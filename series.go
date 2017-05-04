@@ -47,8 +47,18 @@ func NewCategoricalSeries(name string, values []string) *Series {
 func (s *Series) Standardize() {
 }
 
+func (s *Series) Sum() float64 {
+	t := 0.0
+
+	for _, v := range s.Values {
+		t += v
+	}
+
+	return t
+}
+
 func (s *Series) Mean() float64 {
-	return 0
+	return s.Sum() / float64(len(s.Values))
 }
 
 func (s *Series) Median() float64 {
