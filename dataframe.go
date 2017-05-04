@@ -37,7 +37,13 @@ func NewDataFrame(data [][]string) (*DataFrame, error) {
 
 // Columns returns a slice of the column names in the DataFrame.
 func (d *DataFrame) Columns() []string {
-	return []string{}
+	cols := []string{}
+
+	for _, c := range *d {
+		cols = append(cols, c.Name)
+	}
+
+	return cols
 }
 
 // String returns a tabular representation of the DataFrame.
