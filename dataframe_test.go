@@ -53,11 +53,11 @@ func TestStringHeadOnly(t *testing.T) {
 }
 
 func TestListColumnNames(t *testing.T) {
+	expected := []string{"a", "b", "c", "d", "e"}
 	df, err := NewDataFrame(createSampleDataWithHeaders())
 	assert.Equal(t, nil, err, "error is not nil")
 	cols := df.Columns()
 	assert.Equal(t, 5, len(cols), "wrong number of columns returned")
-	expected := []string{"a", "b", "c", "d", "e"}
 
 	for i, v := range expected {
 		assert.Equal(t, v, cols[i], "column header is not correct")

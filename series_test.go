@@ -1,6 +1,7 @@
 package gander
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -10,6 +11,16 @@ func createTestSeries() *Series {
 		"MySeries",
 		[]float64{
 			0, 2, 7, 1, 4, 1, 3, 7, 3, 4,
+		},
+	)
+	return s
+}
+
+func createOddTestSeries() *Series {
+	s := NewSeries(
+		"MySeries",
+		[]float64{
+			0, 2, 7, 1, 5, 5, 3, 7, 4,
 		},
 	)
 	return s
@@ -51,4 +62,92 @@ func TestSeriesSum(t *testing.T) {
 func TestSeriesMean(t *testing.T) {
 	s := createTestSeries()
 	assert.Equal(t, 3.2, s.Mean(), "sum of series is not correct")
+}
+
+func TestSeriesMedianOddValues(t *testing.T) {
+	s := createOddTestSeries() // 0, 1, 2, 3, 4, 5, 5, 7, 7
+	assert.Equal(t, 4.0, s.Median(), "median is not correct")
+}
+
+func TestSeriesMedianEvenValues(t *testing.T) {
+	s := createTestSeries()
+	assert.Equal(t, 3.0, s.Median(), "median is not correct")
+}
+
+func TestApplyFunctionChangesResult(t *testing.T) {
+	s := createTestSeries()
+	r := s.Apply(func(x float64) float64 {
+		return 0
+	})
+
+	for _, v := range r {
+		assert.Equal(t, 0.0, v, "function not applied to series")
+	}
+}
+
+func TestTransformFunctionChangesValues(t *testing.T) {
+	s := createTestSeries()
+	s.Transform(func(x float64) float64 {
+		return 0
+	})
+
+	for _, v := range s.Values {
+		assert.Equal(t, 0.0, v, "function not applied to series")
+	}
+}
+
+func TestApplyFunctionDoesNotChangeValues(t *testing.T) {
+	s := createTestSeries()
+	e := createTestSeries()
+	s.Apply(func(x float64) float64 {
+		return 0
+	})
+
+	for i, v := range s.Values {
+		assert.Equal(t, e.Values[i], v, "function was applied to series")
+	}
+}
+
+func TestSortedSortsResults(t *testing.T) {
+	s := createTestSeries()
+	r := s.Sorted()
+	e := []float64{0, 1, 1, 2, 3, 3, 4, 4, 7, 7}
+
+	for i, v := range e {
+		assert.Equal(t, v, r[i], "values not sorted correctly")
+	}
+}
+
+func TestSortedDoesNotChangeValues(t *testing.T) {
+	s := createTestSeries()
+	s.Sorted()
+	e := []float64{0, 2, 7, 1, 4, 1, 3, 7, 3, 4}
+
+	for i, v := range e {
+		assert.Equal(t, v, s.Values[i], "values sorted inplace")
+	}
+}
+
+func TestMaxReturnsMaximum(t *testing.T) {
+	s := createTestSeries()
+	v := s.Max()
+	assert.Equal(t, 7.0, v, "max is not correct")
+}
+
+func TestMinReturnsMinimum(t *testing.T) {
+	s := createTestSeries()
+	v := s.Min()
+	assert.Equal(t, 0.0, v, "min is not correct")
+}
+
+func TestVariance(t *testing.T) {
+	s := createTestSeries()
+	v := s.Variance()
+	assert.Equal(t, 15.4, v, "variance is not correct")
+}
+
+func TestStdDev(t *testing.T) {
+	s := createTestSeries()
+	v := s.StdDev()
+	assert.Equal(t, "3.92428", fmt.Sprintf("%.5f", v), "std dev is not correct")
 }
