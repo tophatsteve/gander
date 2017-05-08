@@ -50,6 +50,13 @@ func NewCategoricalSeries(name string, values []string) *Series {
 // Standardize scales the values in the Series
 // to standard form.
 func (s *Series) Standardize() {
+	mu := s.Mean()
+	sigma := s.StdDev()
+
+	for i, v := range s.Values {
+		s.Values[i] = (v - mu) / sigma
+		//fmt.Printf("m = %v, s = %v, v = %v, vn = %v\n", mu, sigma, v, s.Values[i])
+	}
 }
 
 // Sum adds together all the values in the Series.
@@ -73,15 +80,33 @@ func (s *Series) Median() float64 {
 	return v[(len(v) / 2)]
 }
 
-func (s *Series) Mode() float64 {
-	return 0
+func (s *Series) Mode() []float64 {
+	m := []float64{}
+	c := count(s.Values)
+
+	var maxCount int
+
+	for _, v := range c {
+		if v > maxCount {
+			maxCount = v
+		}
+	}
+
+	for k := range c {
+		if c[k] == maxCount {
+			m = append(m, k)
+		}
+	}
+
+	return m
 }
 
 func (s *Series) Variance() float64 {
+	mu := s.Mean()
 	sumOfSquares := sum(
 		s.Apply(
 			func(x float64) float64 {
-				return math.Pow(x, 2)
+				return math.Pow(x-mu, 2)
 			}))
 
 	return sumOfSquares / float64(len(s.Values))
@@ -146,4 +171,18 @@ func sum(r []float64) float64 {
 	}
 
 	return t
+}
+
+func count(r []float64) map[float64]int {
+	m := map[float64]int{}
+
+	for _, v := range r {
+		if _, ok := m[v]; ok {
+			m[v] += 1
+		} else {
+			m[v] = 1
+		}
+	}
+
+	return m
 }

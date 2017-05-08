@@ -2,8 +2,10 @@ package gander
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"math"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func createTestSeries() *Series {
@@ -34,6 +36,13 @@ func createTestCategoricalSeries() *Series {
 		},
 	)
 	return s
+}
+
+func toleratedError(e, a float64) bool {
+	if math.Abs(e-a) < 0.0000000001 {
+		return true
+	}
+	return false
 }
 
 func TestNewSeries(t *testing.T) {
@@ -72,6 +81,12 @@ func TestSeriesMedianOddValues(t *testing.T) {
 func TestSeriesMedianEvenValues(t *testing.T) {
 	s := createTestSeries()
 	assert.Equal(t, 3.0, s.Median(), "median is not correct")
+}
+
+func TestSeriesMode(t *testing.T) {
+	s := createTestSeries()
+	m := s.Mode()
+	assert.Equal(t, 4, len(m), "number of mode items is not correct")
 }
 
 func TestApplyFunctionChangesResult(t *testing.T) {
@@ -143,11 +158,18 @@ func TestMinReturnsMinimum(t *testing.T) {
 func TestVariance(t *testing.T) {
 	s := createTestSeries()
 	v := s.Variance()
-	assert.Equal(t, 15.4, v, "variance is not correct")
+	assert.Equal(t, 5.16, v, "variance is not correct")
 }
 
 func TestStdDev(t *testing.T) {
 	s := createTestSeries()
 	v := s.StdDev()
-	assert.Equal(t, "3.92428", fmt.Sprintf("%.5f", v), "std dev is not correct")
+	assert.Equal(t, "2.27156", fmt.Sprintf("%.5f", v), "std dev is not correct")
+}
+
+func TestStandardizedValues(t *testing.T) {
+	s := createTestSeries()
+	s.Standardize()
+	assert.Equal(t, true, toleratedError(0.0, s.Mean()), "mean is not zero(ish)")
+	assert.Equal(t, 1.0, s.StdDev(), "std dev is not one")
 }
