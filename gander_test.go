@@ -1,7 +1,10 @@
 package gander
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -66,10 +69,15 @@ func createLargerSampleData() [][]string {
 	}
 }
 
-func TestLoadCSVFromFile(t *testing.T) {
-	assert.Equal(t, true, false, "TestLoadCSVFromFile not implemented")
-}
-
 func TestLoadCSVFromUrl(t *testing.T) {
-	assert.Equal(t, true, false, "TestLoadCSVFromUrl not implemented")
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "a,b,c,d,e")
+		fmt.Fprintln(w, "1,3,7,9,2")
+		fmt.Fprintln(w, "2,4,1,6,3")
+	}))
+	defer ts.Close()
+
+	df, err := LoadCSVFromURL(ts.URL)
+	assert.Equal(t, nil, err, "error is not nil")
+	assert.Equal(t, 5, len(*df), "dataframe does not have the correct number of columns")
 }
