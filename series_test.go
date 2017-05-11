@@ -5,6 +5,7 @@ import (
 	"math"
 	"testing"
 
+	"errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -172,4 +173,20 @@ func TestStandardizedValues(t *testing.T) {
 	s.Standardize()
 	assert.Equal(t, true, toleratedError(0.0, s.Mean()), "mean is not zero(ish)")
 	assert.Equal(t, 1.0, s.StdDev(), "std dev is not one")
+}
+
+func TestHistOfCategoricalData(t *testing.T) {
+	s := createTestCategoricalSeries()
+	c, err := s.Hist()
+	assert.Equal(t, nil, err, "error is not nil")
+	assert.Equal(t, 4, c["a"], "category a count is not correct")
+	assert.Equal(t, 3, c["b"], "category b count is not correct")
+	assert.Equal(t, 2, c["c"], "category c count is not correct")
+	assert.Equal(t, 1, c["d"], "category d count is not correct")
+}
+
+func TestHistOfNonCategoricalData(t *testing.T) {
+	s := createTestSeries()
+	_, err := s.Hist()
+	assert.Equal(t, errors.New("Series MySeries is not categorical"), err, "did not through correct error")
 }

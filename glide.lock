@@ -1,6 +1,18 @@
-hash: 850e9a2203fdb2af5e8980c170ac6ec8e9bb769bcdbdfefc4236f6f7db32fb17
-updated: 2017-04-03T14:39:54.3202157+01:00
+hash: a29258a2d7a79facbf4bbfa95c0fe351823deee910ecf687f3876fa800dfbe61
+updated: 2017-05-10T16:37:14.5098537+01:00
 imports:
 - name: github.com/stretchr/testify
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
-testImports: []
+  subpackages:
+  - assert
+- name: github.com/tophatsteve/urlreader
+  version: 085504125fb5e8018bdadf279694ed87d207bff3
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib

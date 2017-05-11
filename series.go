@@ -1,6 +1,7 @@
 package gander
 
 import (
+	"fmt"
 	"math"
 	"sort"
 )
@@ -55,7 +56,6 @@ func (s *Series) Standardize() {
 
 	for i, v := range s.Values {
 		s.Values[i] = (v - mu) / sigma
-		//fmt.Printf("m = %v, s = %v, v = %v, vn = %v\n", mu, sigma, v, s.Values[i])
 	}
 }
 
@@ -80,6 +80,7 @@ func (s *Series) Median() float64 {
 	return v[(len(v) / 2)]
 }
 
+// Mode finds the mode of all the values in the Series.
 func (s *Series) Mode() []float64 {
 	m := []float64{}
 	c := count(s.Values)
@@ -101,6 +102,7 @@ func (s *Series) Mode() []float64 {
 	return m
 }
 
+// Variance finds the variance of the values in the Series.
 func (s *Series) Variance() float64 {
 	mu := s.Mean()
 	sumOfSquares := sum(
@@ -112,6 +114,7 @@ func (s *Series) Variance() float64 {
 	return sumOfSquares / float64(len(s.Values))
 }
 
+// StdDev finds the standard deviation of the values in the Series.
 func (s *Series) StdDev() float64 {
 	return math.Sqrt(s.Variance())
 }
@@ -120,16 +123,19 @@ func (s *Series) IsCategorical() bool {
 	return s.CategoricalLabels != nil
 }
 
+// Max returns the maximum value in the Series.
 func (s *Series) Max() float64 {
 	v := s.Sorted()
 	return v[len(s.Values)-1]
 }
 
+// Min returns the minimum value in the Series.
 func (s *Series) Min() float64 {
 	v := s.Sorted()
 	return v[0]
 }
 
+// Range returns the minimum and maximum values in the Series.
 func (s *Series) Range() (float64, float64) {
 	return s.Min(), s.Max()
 }
@@ -161,6 +167,27 @@ func (s *Series) Sorted() []float64 {
 	copy(r, s.Values)
 	sort.Float64s(r)
 	return r
+}
+
+// Hist returns a map of values to counts for categorical data.
+// It returns an error is the Series does not contain categorical data.
+func (s *Series) Hist() (map[string]int, error) {
+	if s.IsCategorical() == false {
+		return nil, fmt.Errorf("Series %s is not categorical", s.Name)
+	}
+
+	r := make(map[string]int)
+
+	for _, v := range s.Values {
+		c := s.CategoricalLabels[v]
+		if _, ok := r[c]; ok {
+			r[c] += 1
+		} else {
+			r[c] = 1
+		}
+	}
+
+	return r, nil
 }
 
 func sum(r []float64) float64 {

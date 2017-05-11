@@ -1,5 +1,10 @@
 package gander
 
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
 func createSampleDataWithHeaders() [][]string {
 	return [][]string{
 		{"a", "b", "c", "d", "e"},
@@ -59,4 +64,12 @@ func createLargerSampleData() [][]string {
 		{"7", "6", "1", "3", "3"},
 		{"4", "2", "4", "7", "6"},
 	}
+}
+
+func TestLoadCSVFromFile(t *testing.T) {
+	assert.Equal(t, true, false, "TestLoadCSVFromFile not implemented")
+}
+
+func TestLoadCSVFromUrl(t *testing.T) {
+	assert.Equal(t, true, false, "TestLoadCSVFromUrl not implemented")
 }

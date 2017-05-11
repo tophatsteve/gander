@@ -3,36 +3,8 @@ package gander
 // Load data and convert to a DataFrame
 
 import (
-	"encoding/csv"
-	"io"
-	"os"
 	"strconv"
 )
-
-func LoadCSVFromURL(url string) (*DataFrame, error) {
-	return &DataFrame{}, nil
-}
-
-func LoadCSVFromPath(path string) (*DataFrame, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
-
-	return LoadCSVFromReader(f)
-}
-
-func LoadCSVFromReader(reader io.Reader) (*DataFrame, error) {
-	r := csv.NewReader(reader)
-	data, err := r.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-
-	return NewDataFrame(data)
-}
 
 func isNumeric(v string) bool {
 	_, err := strconv.ParseFloat(v, 64)
