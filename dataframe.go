@@ -171,7 +171,11 @@ func (d *DataFrame) String() string {
 
 	for r := 0; r < rows; r++ {
 		for c := 0; c < columns; c++ {
-			output += fmt.Sprintf(" %"+strconv.Itoa(colWidths[c]-3)+".2f  ", df[c].Values[r])
+			if df[c].IsCategorical() == true {
+				output += fmt.Sprintf(" %"+strconv.Itoa(colWidths[c]-3)+"s  ", df[c].CategoricalLabels[df[c].Values[r]])
+			} else {
+				output += fmt.Sprintf(" %"+strconv.Itoa(colWidths[c]-3)+".2f  ", df[c].Values[r])
+			}
 		}
 		output += fmt.Sprintf("\n")
 	}

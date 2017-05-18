@@ -63,6 +63,19 @@ func TestStringHeadOnly(t *testing.T) {
 	assert.Equal(t, s, r, "string not returned in correct format")
 }
 
+func TestStringCategoricalData(t *testing.T) {
+	s := `         a           b           c           d           e  
+      1.00        2.00        3.00           a        5.00  
+      3.00        5.00        2.00           b        4.00  
+      7.00        6.00        1.00           b        3.00  
+      4.00        2.00        4.00           a        6.00  
+`
+	df, err := NewDataFrame(createSampleDataWithCategoricalData())
+	assert.Equal(t, nil, err, "error is not nil")
+	r := df.String()
+	assert.Equal(t, s, r, "string not returned in correct format")
+}
+
 func TestListColumnNames(t *testing.T) {
 	expected := []string{"a", "b", "c", "d", "e"}
 	df, err := NewDataFrame(createSampleDataWithHeaders())
