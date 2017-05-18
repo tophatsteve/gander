@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -80,4 +81,22 @@ func TestLoadCSVFromUrl(t *testing.T) {
 	df, err := LoadCSVFromURL(ts.URL)
 	assert.Equal(t, nil, err, "error is not nil")
 	assert.Equal(t, 5, len(*df), "dataframe does not have the correct number of columns")
+	assert.Equal(t, 2, df.Rows(), "dataframe does not have the correct number of rows")
+}
+
+func TestLoadCSVFromInvalidUrl(t *testing.T) {
+	_, err := LoadCSVFromURL("http://doesnotexist.xyz.co/missing.csv")
+	assert.Equal(t, "Get http://doesnotexist.xyz.co/missing.csv: dial tcp: lookup doesnotexist.xyz.co: no such host", err.Error(), "error is not 'does not exist'")
+}
+
+func TestLoadCSVFromPath(t *testing.T) {
+	df, err := LoadCSVFromPath("./testdata/MOCK_DATA.csv")
+	assert.Equal(t, nil, err, "error is not nil")
+	assert.Equal(t, 6, len(*df), "dataframe does not have the correct number of columns")
+	assert.Equal(t, 1000, df.Rows(), "dataframe does not have the correct number of rows")
+}
+
+func TestLoadCSVFromInvalidPath(t *testing.T) {
+	_, err := LoadCSVFromPath("./testdata/MISSING.csv")
+	assert.Equal(t, true, os.IsNotExist(err), "error is not 'does not exist'")
 }

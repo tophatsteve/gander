@@ -213,3 +213,7 @@ func count(r []float64) map[float64]int {
 
 	return m
 }
+
+func (s *Series) dropRow(r int) {
+	s.Values = append(s.Values[:r], s.Values[r+1:]...)
+}

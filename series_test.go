@@ -188,5 +188,5 @@ func TestHistOfCategoricalData(t *testing.T) {
 func TestHistOfNonCategoricalData(t *testing.T) {
 	s := createTestSeries()
 	_, err := s.Hist()
-	assert.Equal(t, errors.New("Series MySeries is not categorical"), err, "did not through correct error")
+	assert.Equal(t, errors.New("Series MySeries is not categorical"), err, "did not return correct error")
 }
