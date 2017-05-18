@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -86,7 +87,7 @@ func TestLoadCSVFromUrl(t *testing.T) {
 
 func TestLoadCSVFromInvalidUrl(t *testing.T) {
 	_, err := LoadCSVFromURL("http://doesnotexist.xyz.co/missing.csv")
-	assert.Equal(t, "Get http://doesnotexist.xyz.co/missing.csv: dial tcp: lookup doesnotexist.xyz.co: no such host", err.Error(), "error is not 'does not exist'")
+	assert.Equal(t, true, strings.Contains(err.Error(), "no such host"), "error is not 'no such host'")
 }
 
 func TestLoadCSVFromPath(t *testing.T) {
