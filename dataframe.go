@@ -8,9 +8,17 @@ import (
 	"sync"
 )
 
+// A DataFrame is a slice of *Series. As a Series
+// contains a slice of float64, a DataFrame can be thought of
+// as a two dimensional table of data, somewhat like a spreadsheet.
 type DataFrame []*Series
 
-// NewDataFrame creates a DataFrame from a 2 dimensional string slice.
+// NewDataFrame creates a DataFrame from a 2 dimensional string slice, converting
+// all data values to float64. If any values in the first row cannot be converted to
+// a float64, then the first row is treated as containing headers and is used to set
+// the column name of each Series. If a value (excluding values in the first row) cannot
+// be converted to a float64, then the Series is marked as holding categorical data
+// and will not be used for numeric calculations.
 func NewDataFrame(data [][]string) (*DataFrame, error) {
 	if !columnCountsMatch(data) {
 		return nil, errors.New("not all rows have the same number of columns")
@@ -28,7 +36,6 @@ func NewDataFrame(data [][]string) (*DataFrame, error) {
 	}
 
 	d := DataFrame{}
-
 	for x := 0; x < len(data[0]); x++ {
 		s := createSeries(headers[x], data, x)
 		d = append(d, s)
@@ -172,7 +179,7 @@ func (d *DataFrame) String() string {
 	for r := 0; r < rows; r++ {
 		for c := 0; c < columns; c++ {
 			if df[c].IsCategorical() == true {
-				output += fmt.Sprintf(" %"+strconv.Itoa(colWidths[c]-3)+"s  ", df[c].CategoricalLabels[df[c].Values[r]])
+				output += fmt.Sprintf(" %"+strconv.Itoa(colWidths[c]-3)+"s  ", df[c].categoricalLabels[df[c].Values[r]])
 			} else {
 				output += fmt.Sprintf(" %"+strconv.Itoa(colWidths[c]-3)+".2f  ", df[c].Values[r])
 			}
@@ -191,6 +198,21 @@ func (d *DataFrame) Standardize() {
 			v.Standardize()
 		}
 	}
+}
+
+// Describe returns a summary of the statisical properties
+// of all the Series in the DataFrame.
+func (d *DataFrame) Describe() []Summary {
+	s := []Summary{}
+
+	for _, v := range *d {
+		if v.IsCategorical() == false {
+			vs := v.Describe()
+			s = append(s, vs)
+		}
+	}
+
+	return s
 }
 
 func (d *DataFrame) toRow(i int) []float64 {

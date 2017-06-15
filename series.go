@@ -6,13 +6,16 @@ import (
 	"sort"
 )
 
+// A Series represents a column of data in a DataFrame.
 type Series struct {
 	Name              string
 	Values            []float64
-	CategoricalLabels map[float64]string
-	CategoricalValues map[string]float64
+	categoricalLabels map[float64]string
+	categoricalValues map[string]float64
 }
 
+// NewSeries creates a new Series with the specified name
+// and values.
 func NewSeries(name string, values []float64) *Series {
 	s := Series{}
 	s.Name = name
@@ -25,22 +28,27 @@ func NewSeries(name string, values []float64) *Series {
 	return &s
 }
 
+// NewCategoricalSeries create a new Series to contain categorical
+// data. The data is passed in as a slice of strings. Internally
+// the string values are converted to float64 and a map is maintained
+// so that the original values can always be retrieved. No statistical
+// operations can be carried out on a categorical series.
 func NewCategoricalSeries(name string, values []string) *Series {
 	categoryNumber := 0.0
 	s := Series{}
-	s.CategoricalLabels = make(map[float64]string)
-	s.CategoricalValues = make(map[string]float64)
+	s.categoricalLabels = make(map[float64]string)
+	s.categoricalValues = make(map[string]float64)
 	s.Name = name
 
 	s.Values = []float64{}
 
 	for _, v := range values {
-		if i, ok := s.CategoricalValues[v]; ok == true {
+		if i, ok := s.categoricalValues[v]; ok == true {
 			s.Values = append(s.Values, i)
 		} else {
 			s.Values = append(s.Values, categoryNumber)
-			s.CategoricalValues[v] = categoryNumber
-			s.CategoricalLabels[categoryNumber] = v
+			s.categoricalValues[v] = categoryNumber
+			s.categoricalLabels[categoryNumber] = v
 			categoryNumber += 1
 		}
 	}
@@ -80,7 +88,8 @@ func (s *Series) Median() float64 {
 	return v[(len(v) / 2)]
 }
 
-// Mode finds the mode of all the values in the Series.
+// Mode finds the mode of all the values in the Series. This returns
+// a slice ofr float64 because a Series could have more than one mode.
 func (s *Series) Mode() []float64 {
 	m := []float64{}
 	c := count(s.Values)
@@ -120,7 +129,7 @@ func (s *Series) StdDev() float64 {
 }
 
 func (s *Series) IsCategorical() bool {
-	return s.CategoricalLabels != nil
+	return s.categoricalLabels != nil
 }
 
 // Max returns the maximum value in the Series.
@@ -179,7 +188,7 @@ func (s *Series) Hist() (map[string]int, error) {
 	r := make(map[string]int)
 
 	for _, v := range s.Values {
-		c := s.CategoricalLabels[v]
+		c := s.categoricalLabels[v]
 		if _, ok := r[c]; ok {
 			r[c] += 1
 		} else {
@@ -188,6 +197,21 @@ func (s *Series) Hist() (map[string]int, error) {
 	}
 
 	return r, nil
+}
+
+// Describe returns a summary of the statisical properties
+// of all the Series.
+func (s *Series) Describe() Summary {
+	r := Summary{Name: s.Name}
+	r.Mean = s.Mean()
+	r.Median = s.Median()
+	r.Mode = s.Mode()
+	r.Min = s.Min()
+	r.Max = s.Max()
+	r.StdDev = s.StdDev()
+	r.Variance = s.Variance()
+
+	return r
 }
 
 func sum(r []float64) float64 {

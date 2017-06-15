@@ -60,8 +60,8 @@ func TestNewCategoricalSeries(t *testing.T) {
 	assert.Equal(t, "MySeries", s.Name, "column name is not correct")
 	assert.Equal(t, true, s.IsCategorical(), "column is not categorical")
 	assert.Equal(t, 10, len(s.Values), "wrong number of values")
-	assert.Equal(t, 4, len(s.CategoricalLabels), "wrong number of category labels")
-	assert.Equal(t, 4, len(s.CategoricalValues), "wrong number of category values")
+	assert.Equal(t, 4, len(s.categoricalLabels), "wrong number of category labels")
+	assert.Equal(t, 4, len(s.categoricalValues), "wrong number of category values")
 }
 
 func TestSeriesSum(t *testing.T) {

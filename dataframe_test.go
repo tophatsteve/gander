@@ -27,8 +27,8 @@ func TestCreateDataFrameWithCategoricalData(t *testing.T) {
 	assert.Equal(t, nil, err, "error is not nil")
 	s := (*df)[3]
 	assert.Equal(t, true, s.IsCategorical(), "series does not contain categorical data")
-	assert.Equal(t, 2, len(s.CategoricalLabels), "wrong number of category labels created")
-	assert.Equal(t, 2, len(s.CategoricalValues), "wrong number of category values created")
+	assert.Equal(t, 2, len(s.categoricalLabels), "wrong number of category labels created")
+	assert.Equal(t, 2, len(s.categoricalValues), "wrong number of category values created")
 }
 
 func TestStringFullFrame(t *testing.T) {

@@ -1,7 +1,5 @@
 package gander
 
-// Load data and convert to a DataFrame
-
 import (
 	"strconv"
 )
